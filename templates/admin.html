@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel — AI Blog Nest{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>🛠️ Admin Panel</h1>
+  <p>Manage users, blogs, and comments across the platform.</p>
+</div>
+
+<div class="stat-cards stat-cards-5">
+  <div class="stat-card"><span class="stat-number">{{ stats.total_users }}</span><span class="stat-label">Users</span></div>
+  <div class="stat-card"><span class="stat-number">{{ stats.total_blogs }}</span><span class="stat-label">Total Blogs</span></div>
+  <div class="stat-card"><span class="stat-number">{{ stats.published_blogs }}</span><span class="stat-label">Published</span></div>
+  <div class="stat-card"><span class="stat-number">{{ stats.total_comments }}</span><span class="stat-label">Comments</span></div>
+  <div class="stat-card"><span class="stat-number">{{ stats.total_likes }}</span><span class="stat-label">Likes</span></div>
+</div>
+
+<section class="admin-section">
+  <h2>All Blogs</h2>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th>Title</th><th>Author</th><th>Category</th><th>Status</th><th>Likes</th><th>Comments</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for blog in blogs %}
+        <tr>
+          <td><a href="{{ url_for('view_blog', blog_id=blog.id) }}">{{ blog.title }}</a></td>
+          <td>{{ blog.author_name }}</td>
+          <td>{{ blog.category }}</td>
+          <td><span class="status-badge status-{{ blog.status }}">{{ blog.status }}</span></td>
+          <td>{{ blog.like_count }}</td>
+          <td>{{ blog.comment_count }}</td>
+          <td>
+            <form method="post" action="{{ url_for('admin_delete_blog', blog_id=blog.id) }}" onsubmit="return confirm('Delete this blog?');">
+              <button type="submit" class="btn btn-small btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="empty-state">No blogs yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="admin-section">
+  <h2>All Users</h2>
+  <div class="table-wrap">
+    <table class="data-table">
+      <thead>
+        <tr><th>Name</th><th>Email</th><th>Role</th><th>Joined</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for u in users %}
+        <tr>
+          <td>{{ u.name }}</td>
+          <td>{{ u.email }}</td>
+          <td>{{ u.role }}</td>
+          <td>{{ u.created_at | dateformat }}</td>
+          <td>
+            {% if u.id != current_user.id %}
+            <form method="post" action="{{ url_for('admin_delete_user', user_id=u.id) }}" onsubmit="return confirm('Delete this user and all their content?');">
+              <button type="submit" class="btn btn-small btn-danger">Delete</button>
+            </form>
+            {% else %}
+              <span class="muted">(you)</span>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</section>
+
+{% endblock %}

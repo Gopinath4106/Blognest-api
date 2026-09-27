@@ -1,0 +1,19 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+env/
+venv/
+.venv/
+
+# Database
+instance/*.db
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+*.log

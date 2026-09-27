@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}AI Blog Generator — AI Blog Nest{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>✨ AI Blog Generator</h1>
+  <p>
+    Describe your topic and let AI Blog Nest draft a structured blog post for you.
+    {% if not ai_enabled %}
+      <span class="badge badge-demo">Demo / Offline Mode Active</span> — no API key is configured,
+      so content is generated locally using the built-in demo engine.
+    {% endif %}
+  </p>
+</div>
+
+<div class="generator-layout">
+  <div class="generator-form-card">
+    <form method="post" action="{{ url_for('generate') }}" class="form">
+      <label for="topic">Blog Topic</label>
+      <input type="text" id="topic" name="topic" placeholder="e.g. Cyber Security Awareness"
+             value="{{ topic or '' }}" required>
+
+      <label for="category">Category</label>
+      <select id="category" name="category">
+        {% for c in categories %}
+          <option value="{{ c }}" {% if category == c %}selected{% endif %}>{{ c }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="tone">Tone</label>
+      <select id="tone" name="tone">
+        {% for t in tones %}
+          <option value="{{ t }}" {% if tone == t %}selected{% endif %}>{{ t }}</option>
+        {% endfor %}
+      </select>
+
+      <label for="length">Length</label>
+      <select id="length" name="length">
+        {% for l in lengths %}
+          <option value="{{ l }}" {% if length == l %}selected{% endif %}>{{ l }}</option>
+        {% endfor %}
+      </select>
+
+      <button type="submit" class="btn btn-primary btn-block">Generate Blog</button>
+    </form>
+  </div>
+
+  <div class="generator-result-card">
+    {% if generated %}
+      <div class="generated-badge">
+        {% if generated.used_ai %}
+          <span class="badge badge-live">Generated via AI API</span>
+        {% else %}
+          <span class="badge badge-demo">Generated via Demo Mode</span>
+        {% endif %}
+      </div>
+
+      <h2>Review &amp; Edit Your Draft</h2>
+      <form method="post" action="{{ url_for('create_blog') }}" class="form">
+        <label for="title">Blog Title</label>
+        <input type="text" id="title" name="title" value="{{ generated.title }}" required>
+
+        <input type="hidden" name="category" value="{{ category }}">
+
+        <label for="tags">Tags (comma separated)</label>
+        <input type="text" id="tags" name="tags" value="{{ generated.tags | join(', ') }}">
+
+        <label for="content">Content (editable)</label>
+        <textarea id="content" name="content" rows="16" required>{{ full_html }}</textarea>
+        <p class="field-hint">Basic HTML tags like &lt;h3&gt; and &lt;p&gt; are supported and used for structure.</p>
+
+        <div class="form-actions">
+          <button type="submit" name="action" value="draft" class="btn btn-outline">Save as Draft</button>
+          <button type="submit" name="action" value="publish" class="btn btn-primary">Publish Now</button>
+        </div>
+      </form>
+    {% else %}
+      <div class="empty-state-box">
+        <p>🤖 Your generated blog draft will appear here.</p>
+        <p class="muted">Fill in the topic, tone, and length on the left, then click <strong>Generate Blog</strong>.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

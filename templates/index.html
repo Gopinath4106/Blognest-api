@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}AI Blog Nest — AI-Powered Blogging{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-text">
+    <h1>Write Smarter Blogs with <span class="accent">AI Blog Nest</span></h1>
+    <p>
+      Enter a topic, let AI draft your blog, refine it in your own words, and publish
+      it for the world to read &mdash; all in one clean, simple platform.
+    </p>
+    <div class="hero-actions">
+      {% if current_user %}
+        <a href="{{ url_for('generate') }}" class="btn btn-primary">✨ Generate Blog</a>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline">Go to Dashboard</a>
+      {% else %}
+        <a href="{{ url_for('register') }}" class="btn btn-primary">✨ Generate Blog</a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline">Login</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="hero-art" aria-hidden="true">🪺📝🤖</div>
+</section>
+
+<section class="search-bar-section">
+  <form action="{{ url_for('search') }}" method="get" class="search-form">
+    <input type="text" name="q" placeholder="Search blogs by title, content or tag..." value="{{ q }}">
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+</section>
+
+<section class="categories-section">
+  <h2>Browse by Category</h2>
+  <div class="category-pills">
+    {% for c in categories %}
+      <a class="pill {% if selected_category == c %}pill-active{% endif %}"
+         href="{{ url_for('index', category=c) }}">{{ c }}</a>
+    {% endfor %}
+    {% if selected_category %}
+      <a class="pill pill-clear" href="{{ url_for('index') }}">Clear ✕</a>
+    {% endif %}
+  </div>
+</section>
+
+<section class="latest-blogs">
+  <h2>Latest Blogs</h2>
+  {% if blogs %}
+    <div class="blog-grid">
+      {% for blog in blogs %}
+        <article class="blog-card">
+          <div class="blog-card-category">{{ blog.category }}</div>
+          <h3><a href="{{ url_for('view_blog', blog_id=blog.id) }}">{{ blog.title }}</a></h3>
+          <p class="blog-card-excerpt">{{ blog.content | excerpt(140) }}</p>
+          <div class="blog-card-meta">
+            <span>✍️ {{ blog.author_name }}</span>
+            <span>📅 {{ blog.created_at | dateformat }}</span>
+          </div>
+          <div class="blog-card-stats">
+            <span>❤️ {{ blog.like_count }}</span>
+            <span>💬 {{ blog.comment_count }}</span>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="empty-state">No blogs published yet. Be the first to <a href="{{ url_for('generate') if current_user else url_for('register') }}">create one</a>!</p>
+  {% endif %}
+</section>
+
+{% endblock %}

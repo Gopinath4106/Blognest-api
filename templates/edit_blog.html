@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Edit Blog — AI Blog Nest{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <h1>Edit Blog</h1>
+</div>
+
+<div class="form-card">
+  <form method="post" action="{{ url_for('edit_blog', blog_id=blog.id) }}" class="form">
+    <label for="title">Blog Title</label>
+    <input type="text" id="title" name="title" value="{{ blog.title }}" required>
+
+    <div class="form-row">
+      <div>
+        <label for="category">Category</label>
+        <select id="category" name="category">
+          {% for c in categories %}
+            <option value="{{ c }}" {% if blog.category == c %}selected{% endif %}>{{ c }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label for="tags">Tags (comma separated)</label>
+        <input type="text" id="tags" name="tags" value="{{ blog.tags }}">
+      </div>
+    </div>
+
+    <label for="content">Content</label>
+    <textarea id="content" name="content" rows="16" required>{{ blog.content }}</textarea>
+
+    <div class="form-actions">
+      <button type="submit" name="action" value="draft_save" class="btn btn-outline">Save as Draft</button>
+      <button type="submit" name="action" value="publish" class="btn btn-primary">
+        {% if blog.status == 'published' %}Update & Keep Published{% else %}Publish{% endif %}
+      </button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

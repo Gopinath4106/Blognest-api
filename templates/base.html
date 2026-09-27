@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}AI Blog Nest{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🪺</text></svg>">
+</head>
+<body>
+
+<header class="navbar">
+  <div class="container navbar-inner">
+    <a href="{{ url_for('index') }}" class="brand">
+      <span class="brand-icon">🪺</span> AI Blog Nest
+    </a>
+
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+
+    <nav class="nav-links" id="navLinks">
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('search') }}">Search</a>
+      {% if current_user %}
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('generate') }}">Generate Blog</a>
+        <a href="{{ url_for('my_blogs') }}">My Blogs</a>
+        {% if current_user['role'] == 'admin' %}
+          <a href="{{ url_for('admin_dashboard') }}">Admin</a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}" class="nav-cta-outline">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}" class="nav-cta">Sign Up</a>
+      {% endif %}
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">
+            <span>{{ message }}</span>
+            <button class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+          </div>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p>&copy; 2026 AI Blog Nest &mdash; B.Sc Computer Science (Cyber Security) College Project.</p>
+    <p class="footer-mode">
+      AI Mode:
+      {% if ai_enabled %}
+        <span class="badge badge-live">Live API</span>
+      {% else %}
+        <span class="badge badge-demo">Demo / Offline</span>
+      {% endif %}
+    </p>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
